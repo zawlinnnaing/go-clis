@@ -1,9 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/zawlinnnaing/go-clis/to-do/todo"
 )
@@ -11,6 +11,13 @@ import (
 const todoFileName = ".todo.json"
 
 func main() {
+
+	task := flag.String("task", "", "Task to be added in the ToDo list")
+	showList := flag.Bool("list", false, "List all tasks")
+	complete := flag.Int("complete", 0, "Item to be completed")
+
+	flag.Parse()
+
 	list := &todo.TaskList{}
 
 	if err := list.Load(todoFileName); err != nil {
@@ -19,16 +26,30 @@ func main() {
 	}
 
 	switch {
-	case len(os.Args) == 1:
+	case *showList:
 		for _, item := range *list {
+			if item.Done {
+				continue
+			}
 			fmt.Println(item.Task)
 		}
-	default:
-		item := strings.Join(os.Args[1:], " ")
-		list.Add(item)
+	case *complete > 0:
+		if err := list.Complete(*complete); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 		if err := list.Save(todoFileName); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+	case *task != "":
+		list.Add(*task)
+		if err := list.Save(todoFileName); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	default:
+		fmt.Fprintln(os.Stderr, "Invalid option")
+		os.Exit(1)
 	}
 }

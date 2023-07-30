@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 )
 
@@ -47,7 +46,7 @@ func TestCLI(t *testing.T) {
 	cmdPath := filepath.Join(dir, binName)
 
 	t.Run("AddTask", func(t *testing.T) {
-		err := exec.Command(cmdPath, strings.Split(task, " ")...).Run()
+		err := exec.Command(cmdPath, "-task", task).Run()
 		if err != nil {
 			fmt.Printf("Error: %v", err)
 			t.Fatal(err)
@@ -55,7 +54,7 @@ func TestCLI(t *testing.T) {
 	})
 
 	t.Run("ListTasks", func(t *testing.T) {
-		out, err := exec.Command(cmdPath).CombinedOutput()
+		out, err := exec.Command(cmdPath, "-list").CombinedOutput()
 		if err != nil {
 			t.Fatal(err)
 		}
