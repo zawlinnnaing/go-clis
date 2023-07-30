@@ -1,14 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"os"
+	"strings"
 
 	"github.com/zawlinnnaing/go-clis/to-do/todo"
 )
 
-const todoFileName = ".todo.json"
+var todoFileName = ".todo.json"
 
 func main() {
 
@@ -19,11 +22,15 @@ func main() {
 		flag.PrintDefaults()
 	}
 
-	task := flag.String("task", "", "Task to be added in the ToDo list")
+	add := flag.Bool("add", false, "Task to be added in the ToDo list")
 	showList := flag.Bool("list", false, "List all tasks")
 	complete := flag.Int("complete", 0, "Item to be completed")
 
 	flag.Parse()
+
+	if os.Getenv("TODO_FILENAME") != "" {
+		todoFileName = os.Getenv("TODO_FILENAME")
+	}
 
 	list := &todo.TaskList{}
 
@@ -44,8 +51,13 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-	case *task != "":
-		list.Add(*task)
+	case *add:
+		task, err := getTask(os.Stdin, flag.Args()...)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		list.Add(task)
 		if err := list.Save(todoFileName); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -54,4 +66,22 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Invalid option")
 		os.Exit(1)
 	}
+}
+
+func getTask(reader io.Reader, args ...string) (string, error) {
+	if len(args) > 0 {
+		return strings.Join(args, " "), nil
+	}
+
+	scanner := bufio.NewScanner(reader)
+	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+	str := scanner.Text()
+	if len(str) == 0 {
+		return "", fmt.Errorf("task cannot be blank")
+	}
+
+	return str, nil
 }
