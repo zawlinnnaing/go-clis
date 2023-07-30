@@ -52,12 +52,14 @@ func main() {
 			os.Exit(1)
 		}
 	case *add:
-		task, err := getTask(os.Stdin, flag.Args()...)
+		tasks, err := getTask(os.Stdin, flag.Args()...)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-		list.Add(task)
+		for _, task := range tasks {
+			list.Add(task)
+		}
 		if err := list.Save(todoFileName); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -68,20 +70,19 @@ func main() {
 	}
 }
 
-func getTask(reader io.Reader, args ...string) (string, error) {
+func getTask(reader io.Reader, args ...string) ([]string, error) {
 	if len(args) > 0 {
-		return strings.Join(args, " "), nil
+		return []string{strings.Join(args, " ")}, nil
 	}
 
 	scanner := bufio.NewScanner(reader)
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		return "", err
+	strs := []string{}
+	for scanner.Scan() {
+		strs = append(strs, scanner.Text())
 	}
-	str := scanner.Text()
-	if len(str) == 0 {
-		return "", fmt.Errorf("task cannot be blank")
+	if len(strs) == 0 {
+		return []string{}, fmt.Errorf("task cannot be blank")
 	}
 
-	return str, nil
+	return strs, nil
 }
