@@ -63,4 +63,18 @@ func TestCLI(t *testing.T) {
 			t.Errorf("Expected %v, Received %v", expected, string(out))
 		}
 	})
+
+	t.Run("CompleteTask", func(t *testing.T) {
+		err := exec.Command(cmdPath, "-complete", "1").Run()
+		if err != nil {
+			t.Fatal(err)
+		}
+		out, err := exec.Command(cmdPath, "-list").CombinedOutput()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(out) != "" {
+			t.Errorf("Expected empty string, received %v", string(out))
+		}
+	})
 }

@@ -34,7 +34,7 @@ func main() {
 			fmt.Println(item.Task)
 		}
 	case *complete > 0:
-		if err := list.Complete(*complete); err != nil {
+		if err := list.Complete(*complete - 1); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
