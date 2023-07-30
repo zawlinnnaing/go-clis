@@ -58,7 +58,7 @@ func TestCLI(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		expected := task + "\n"
+		expected := fmt.Sprintf("1: %s\n", task)
 		if string(out) != expected {
 			t.Errorf("Expected %v, Received %v", expected, string(out))
 		}
@@ -73,8 +73,9 @@ func TestCLI(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if string(out) != "" {
-			t.Errorf("Expected empty string, received %v", string(out))
+		expected := fmt.Sprintf("X 1: %s\n", task)
+		if string(out) != expected {
+			t.Errorf("Expected %v, received %v", expected, string(out))
 		}
 	})
 }
