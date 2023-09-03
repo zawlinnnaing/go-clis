@@ -5,4 +5,5 @@ use (
 	./word-counter
 	./markdown-preview
 	./fs-walk
+	./fs-unarchive
 )
