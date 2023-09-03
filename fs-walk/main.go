@@ -16,6 +16,7 @@ type config struct {
 	list     bool
 	del      bool
 	delWrite io.Writer
+	archive  string
 }
 
 func main() {
@@ -30,6 +31,8 @@ func main() {
 	size := flag.Int64("size", 0, "Minimum file size")
 
 	logFileName := flag.String("log", "", "Log deletes to this file")
+
+	archive := flag.String("archive", "", "Directory to archive to")
 
 	flag.Parse()
 
@@ -53,6 +56,7 @@ func main() {
 		size:     *size,
 		del:      *del,
 		delWrite: logFile,
+		archive:  *archive,
 	}
 
 	if err := run(*root, os.Stdout, conf); err != nil {
@@ -72,6 +76,12 @@ func run(root string, out io.Writer, cfg config) error {
 
 		if cfg.list {
 			return listFile(path, out)
+		}
+
+		if cfg.archive != "" {
+			if err := archiveFile(cfg.archive, root, path); err != nil {
+				return err
+			}
 		}
 
 		if cfg.del {

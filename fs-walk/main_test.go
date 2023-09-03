@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -85,6 +86,59 @@ func TestRunDel(t *testing.T) {
 			if len(logLines) != expectedLogLines {
 				t.Errorf("Expected %d log lines, received %d log lines.", expectedLogLines, len(logLines))
 			}
+		})
+	}
+}
+
+func TestRunArchive(t *testing.T) {
+	testCases := []struct {
+		name         string
+		cfg          config
+		extNoArchive string
+		nArchive     int
+		nNoArchive   int
+	}{
+		{name: "ArchiveExtensionNoMatch", cfg: config{ext: ".log"}, extNoArchive: ".gz", nArchive: 0, nNoArchive: 10},
+		{name: "ArchiveExtensionMatch", cfg: config{ext: ".log"}, extNoArchive: "", nArchive: 10, nNoArchive: 0},
+		{name: "ArchiveExtensionMixed", cfg: config{ext: ".log"}, extNoArchive: ".gz", nArchive: 5, nNoArchive: 5},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			var outBuffer bytes.Buffer
+			tempDir, cleanup := createTempDir(t, map[string]int{
+				testCase.extNoArchive: testCase.nNoArchive,
+				testCase.cfg.ext:      testCase.nArchive,
+			})
+			defer cleanup()
+			archiveDir, cleanupArchive := createTempDir(t, nil)
+			defer cleanupArchive()
+			testCase.cfg.archive = archiveDir
+			if err := run(tempDir, &outBuffer, testCase.cfg); err != nil {
+				t.Fatal(err)
+			}
+
+			pattern := filepath.Join(tempDir, fmt.Sprintf("*%s", testCase.cfg.ext))
+			expectedFiles, err := filepath.Glob(pattern)
+			if err != nil {
+				t.Fatal(err)
+			}
+			expectOutput := strings.Join(expectedFiles, "\n")
+			result := strings.TrimSpace(outBuffer.String())
+
+			if result != expectOutput {
+				t.Errorf("Expected %v, received %v", expectOutput, result)
+			}
+
+			archivedFiles, err := ioutil.ReadDir(archiveDir)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if len(archivedFiles) != testCase.nArchive {
+				t.Errorf("Expected %d files to be archived, got %d", testCase.nArchive, len(archivedFiles))
+			}
+
 		})
 	}
 }
