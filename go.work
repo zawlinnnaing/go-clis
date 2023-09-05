@@ -6,4 +6,5 @@ use (
 	./markdown-preview
 	./fs-walk
 	./fs-unarchive
+	./csv-stats
 )
