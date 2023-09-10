@@ -40,8 +40,8 @@ func csv2Float(reader io.Reader, column int) ([]float64, error) {
 		if idx == 0 {
 			continue
 		}
-		if column > len(row) {
-			return nil, fmt.Errorf("%w: file only has %d columns", err, len(row))
+		if column >= len(row) {
+			return nil, fmt.Errorf("%w: %d", ErrInvalidColumn, len(row))
 		}
 		val, err := strconv.ParseFloat(row[column], 64)
 		if err != nil {

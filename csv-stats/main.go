@@ -50,7 +50,7 @@ func run(fileNames []string, op string, column int, out io.Writer) error {
 		fileReader, err := os.Open(fileName)
 
 		if err != nil {
-			return fmt.Errorf("cannot open file: %s", fileName)
+			return err
 		}
 		data, err := csv2Float(fileReader, column)
 		if err != nil {
