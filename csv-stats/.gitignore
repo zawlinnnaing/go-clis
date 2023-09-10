@@ -1,0 +1,6 @@
+# Artifacts for benchmarking
+benchmark/
+testdata/benchmark
+
+# Built artifact
+csv-stats
