@@ -27,17 +27,21 @@ func average(data []float64) float64 {
 
 func csv2Float(reader io.Reader, column int) ([]float64, error) {
 	csvReader := csv.NewReader(reader)
-	allData, err := csvReader.ReadAll()
-	if err != nil {
-		return nil, fmt.Errorf("cannot read data from file: %w", err)
-	}
+	csvReader.ReuseRecord = true
 	// From natural number index to slice index
 	column -= 1
 
 	var data []float64
 
-	for idx, row := range allData {
-		if idx == 0 {
+	for i := 0; ; i++ {
+		row, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("cannot read data from file: %w", err)
+		}
+		if i == 0 {
 			continue
 		}
 		if column >= len(row) {
