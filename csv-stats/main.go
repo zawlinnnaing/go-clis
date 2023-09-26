@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 )
 
 var AVAILABLE_OPERATIONS = []string{
@@ -45,24 +46,44 @@ func run(fileNames []string, op string, column int, out io.Writer) error {
 	}
 
 	allValues := []float64{}
-
+	resCh := make(chan []float64)
+	errCh := make(chan error)
+	doneCh := make(chan struct{})
+	wg := sync.WaitGroup{}
 	for _, fileName := range fileNames {
-		fileReader, err := os.Open(fileName)
-
-		if err != nil {
-			return err
-		}
-		data, err := csv2Float(fileReader, column)
-		if err != nil {
-			return err
-		}
-		if err = fileReader.Close(); err != nil {
-			return fmt.Errorf("failed to close file: %s", fileName)
-		}
-		allValues = append(allValues, data...)
+		wg.Add(1)
+		go func(fileName string) {
+			defer wg.Done()
+			fileReader, err := os.Open(fileName)
+			if err != nil {
+				errCh <- fmt.Errorf("cannot open file: %w", err)
+				return
+			}
+			data, err := csv2Float(fileReader, column)
+			if err != nil {
+				errCh <- err
+			}
+			if err = fileReader.Close(); err != nil {
+				errCh <- fmt.Errorf("failed to close file: %s", fileName)
+			}
+			resCh <- data
+		}(fileName)
 	}
 
-	_, err := fmt.Fprintln(out, operation(allValues))
+	go func() {
+		wg.Wait()
+		close(doneCh)
+	}()
 
-	return err
+	for {
+		select {
+		case err := <-errCh:
+			return err
+		case data := <-resCh:
+			allValues = append(allValues, data...)
+		case <-doneCh:
+			_, err := fmt.Fprintln(out, operation(allValues))
+			return err
+		}
+	}
 }
