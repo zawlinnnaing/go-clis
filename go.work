@@ -7,4 +7,5 @@ use (
 	./fs-walk
 	./fs-unarchive
 	./csv-stats
+	./go-ci
 )
