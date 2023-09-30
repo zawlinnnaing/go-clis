@@ -1,11 +1,13 @@
 go 1.20
 
 use (
+	./csv-stats
+	./fs-unarchive
+	./fs-walk
+	./go-ci
+	./go-ci/testdata/tool
+	./go-ci/testdata/toolErr
+	./markdown-preview
 	./to-do
 	./word-counter
-	./markdown-preview
-	./fs-walk
-	./fs-unarchive
-	./csv-stats
-	./go-ci
 )

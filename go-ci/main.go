@@ -20,16 +20,15 @@ func main() {
 
 func run(project string, out io.Writer) error {
 	if project == "" {
-		return fmt.Errorf("project directory is required")
+		return fmt.Errorf("project directory is required: %w", ErrValidation)
 	}
-	// Need to add error to end of the list so that go doesn't create executable
-	args := []string{"build", ".", "error"}
+	args := []string{"build", "."}
 
 	cmd := exec.Command("go", args...)
 	cmd.Dir = project
 
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("go build failed: %w", err)
+		return &StepError{step: "go build", msg: "go build failed", cause: err}
 	}
 
 	_, err := fmt.Fprintln(out, "go build success")
