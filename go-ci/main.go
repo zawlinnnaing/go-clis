@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 )
+
+type executer interface {
+	execute() (string, error)
+}
 
 func main() {
 	project := flag.String("p", "", "Project directory")
@@ -19,19 +22,20 @@ func main() {
 }
 
 func run(project string, out io.Writer) error {
-	if project == "" {
-		return fmt.Errorf("project directory is required: %w", ErrValidation)
+	pipeline := []executer{
+		NewStep("go build", "go", "Go build: success", project, []string{"build", "."}),
+		NewStep("go test", "go", "Go test: success", project, []string{"test", "-v", "."}),
+		NewExecutionStep("go format", "gofmt", "Go format: success", project, []string{"-l"}),
 	}
-	args := []string{"build", "."}
-
-	cmd := exec.Command("go", args...)
-	cmd.Dir = project
-
-	if err := cmd.Run(); err != nil {
-		return &StepError{step: "go build", msg: "go build failed", cause: err}
+	for _, step := range pipeline {
+		output, err := step.execute()
+		if err != nil {
+			return err
+		}
+		_, err = fmt.Fprintln(out, output)
+		if err != nil {
+			return err
+		}
 	}
-
-	_, err := fmt.Fprintln(out, "go build success")
-
-	return err
+	return nil
 }
