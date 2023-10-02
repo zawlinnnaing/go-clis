@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -29,15 +31,34 @@ func run(project string, out io.Writer) error {
 		NewExecutionStep("go format", "gofmt", "Go format: success", project, []string{"-l"}),
 		NewTimeoutStep("git push", "git", "Git push: success", project, []string{"push", "origin", "master"}, 10*time.Second),
 	}
-	for _, step := range pipeline {
-		output, err := step.execute()
-		if err != nil {
-			return err
+	sigChan := make(chan os.Signal, 1)
+	errCh := make(chan error)
+	doneCh := make(chan struct{})
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		for _, step := range pipeline {
+			output, err := step.execute()
+			if err != nil {
+				errCh <- err
+				return
+			}
+			_, err = fmt.Fprintln(out, output)
+			if err != nil {
+				errCh <- err
+				return
+			}
 		}
-		_, err = fmt.Fprintln(out, output)
-		if err != nil {
+		close(doneCh)
+	}()
+	for {
+		select {
+		case received := <-sigChan:
+			signal.Stop(sigChan)
+			return fmt.Errorf("%s: Exiting: %w", received, ErrSignal)
+		case err := <-errCh:
 			return err
+		case <-doneCh:
+			return nil
 		}
 	}
-	return nil
 }

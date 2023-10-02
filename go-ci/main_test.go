@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -102,6 +104,78 @@ func TestHelperProcess(t *testing.T) {
 		os.Exit(0)
 	}
 	os.Exit(1)
+}
+
+func TestRunKill(t *testing.T) {
+	testCases := []struct {
+		name    string
+		project string
+		expErr  error
+		sig     syscall.Signal
+	}{
+		{
+			name:    "SIGINT",
+			project: "./testdata/tool",
+			expErr:  ErrSignal,
+			sig:     syscall.SIGINT,
+		},
+		{
+			name:    "SIGTERM",
+			project: "./testdata/tool",
+			expErr:  ErrSignal,
+			sig:     syscall.SIGTERM,
+		},
+		{
+			name:    "SIGQUIT",
+			project: "./testdata/tool",
+			expErr:  nil,
+			sig:     syscall.SIGQUIT,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			command = mockCommandTimeout
+			errCh := make(chan error)
+			ignoreSig := make(chan os.Signal, 1)
+			expSig := make(chan os.Signal, 1)
+
+			signal.Notify(ignoreSig, syscall.SIGQUIT)
+			defer signal.Stop(ignoreSig)
+
+			signal.Notify(expSig, testCase.sig)
+			defer signal.Stop(expSig)
+
+			go func() {
+				errCh <- run(testCase.project, ioutil.Discard)
+			}()
+			go func() {
+				time.Sleep(2 * time.Second)
+				syscall.Kill(os.Getpid(), testCase.sig)
+			}()
+
+			select {
+			case err := <-errCh:
+				if err == nil {
+					t.Errorf("Expected error, received none")
+					return
+				}
+				if !errors.Is(err, testCase.expErr) {
+					t.Errorf("Expected error: %q, received error: %q", testCase.expErr, err)
+					return
+				}
+				select {
+				case rec := <-expSig:
+					if rec != testCase.sig {
+						t.Errorf("Expected signal: %v, received signal: %v", testCase.sig, rec)
+						return
+					}
+				default:
+					t.Error("Signal not received")
+				}
+			case <-ignoreSig:
+			}
+		})
+	}
 }
 
 func setUpGit(t *testing.T, project string) func() {
