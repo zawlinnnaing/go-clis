@@ -11,10 +11,12 @@ type timeoutStep struct {
 	timeout time.Duration
 }
 
+var command = exec.CommandContext
+
 func (timeoutStep *timeoutStep) execute() (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutStep.timeout)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, timeoutStep.exe, timeoutStep.args...)
+	cmd := command(ctx, timeoutStep.exe, timeoutStep.args...)
 	cmd.Dir = timeoutStep.project
 	if err := cmd.Run(); err != nil {
 		if ctx.Err() == context.DeadlineExceeded {

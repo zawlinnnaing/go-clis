@@ -22,7 +22,7 @@ func (s *StepError) Error() string {
 func (s *StepError) Is(target error) bool {
 	t, ok := target.(*StepError)
 	if !ok {
-		return false
+		return s.cause == target
 	}
 
 	return t.step == s.step
