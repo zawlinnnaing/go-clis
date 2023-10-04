@@ -19,7 +19,11 @@ func main() {
 	file := flag.String("f", "", "Config file path")
 	flag.Parse()
 
-	readFile(*file)
+	_, err := parseFile(*file)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 
 	if err := run(*project, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
