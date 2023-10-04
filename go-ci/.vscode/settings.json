@@ -1,5 +1,12 @@
 {
-    "cSpell.words": [
-        "gofmt"
-    ]
+  "cSpell.words": ["gofmt"],
+  "yaml.schemas": {},
+  "json.schemaDownload.enable": false,
+  "json.schemas": [
+    {
+      "fileMatch": ["*.yaml"],
+      "schema": false
+    }
+  ],
+  "yaml.schemaStore.enable": false
 }

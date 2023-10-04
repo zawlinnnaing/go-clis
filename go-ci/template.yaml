@@ -1,0 +1,20 @@
+- name: go build
+  project: "./testdata/tool"
+  type: "step"
+  exe: go
+  args: build .
+- name: go test
+  project: "./testdata/tool"
+  type: "step"
+  exe: go
+  args: test -v .
+- name: go format
+  project: "./testdata/tool"
+  type: "execution"
+  exe: gofmt
+  args: -l
+- name: git push
+  project: "./testdata/tool"
+  type: "timeout"
+  exe: git
+  args: push origin main

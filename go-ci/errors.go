@@ -6,8 +6,10 @@ import (
 )
 
 var (
-	ErrValidation = errors.New("validation failed")
-	ErrSignal     = errors.New("signal received")
+	ErrValidation  = errors.New("validation failed")
+	ErrSignal      = errors.New("signal received")
+	ErrEmptyDir    = errors.New("empty directory")
+	ErrInvalidFile = errors.New("invalid file")
 )
 
 type StepError struct {

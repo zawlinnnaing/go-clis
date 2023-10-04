@@ -16,7 +16,10 @@ type executer interface {
 
 func main() {
 	project := flag.String("p", "", "Project directory")
+	file := flag.String("f", "", "Config file path")
 	flag.Parse()
+
+	readFile(*file)
 
 	if err := run(*project, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
