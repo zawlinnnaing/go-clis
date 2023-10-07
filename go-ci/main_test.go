@@ -18,6 +18,7 @@ import (
 func TestRun(t *testing.T) {
 	testCases := []struct {
 		proj     string
+		file     string
 		output   string
 		expErr   error
 		name     string
@@ -53,6 +54,14 @@ func TestRun(t *testing.T) {
 			setUpGit: false,
 			mockCmd:  mockCommandTimeout,
 		},
+		{
+			name:     "successFile",
+			file:     "./testdata/valid.yaml",
+			expErr:   nil,
+			proj:     "",
+			output:   "go build success\ngo test success\ngo format success\ngit push success\n",
+			setUpGit: false,
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -69,7 +78,7 @@ func TestRun(t *testing.T) {
 				command = testCase.mockCmd
 			}
 			out := bytes.Buffer{}
-			err := run(testCase.proj, "", &out)
+			err := run(testCase.proj, testCase.file, &out)
 			if testCase.expErr != nil {
 				if err == nil {
 					t.Errorf("Expected error; received none")

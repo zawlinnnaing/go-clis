@@ -20,5 +20,5 @@
   project: "./testdata/tool"
   type: "timeout"
   exe: git
-  args: push origin main
+  args: push origin master
   message: "git push success"
