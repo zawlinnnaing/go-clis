@@ -5,4 +5,4 @@ A cli program for running CI jobs.
 - Git push
 
 ## To do
-- [ ] Implement `Get the Pipeline configuration from a file instead of hard-coding it in the run function.`
+- [x] Implement `Get the Pipeline configuration from a file instead of hard-coding it in the run function.`
