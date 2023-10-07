@@ -18,30 +18,28 @@ func main() {
 	file := flag.String("f", "", "Config file path")
 	flag.Parse()
 
-	if project == nil && file == nil {
-		fmt.Fprintln(os.Stderr, "Must provide either 'p' or 'f' flag")
+	if err := run(*project, *file, os.Stdout); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
 
+func run(project string, file string, out io.Writer) error {
+	if project == "" && file == "" {
+		return fmt.Errorf("must provide either project or file")
+	}
 	var pipeline []executer
-	if file != nil {
-		steps, err := parseFile(*file)
+	if file != "" {
+		steps, err := parseFile(file)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		pipeline = steps
 	} else {
-		pipeline = createDefaultPipeline(*project)
+		pipeline = createDefaultPipeline(project)
 	}
 
-	if err := run(pipeline, os.Stdout); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-}
-
-func run(pipeline []executer, out io.Writer) error {
 	sigChan := make(chan os.Signal, 1)
 	errCh := make(chan error)
 	doneCh := make(chan struct{})
