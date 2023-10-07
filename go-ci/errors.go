@@ -10,6 +10,7 @@ var (
 	ErrSignal      = errors.New("signal received")
 	ErrEmptyDir    = errors.New("empty directory")
 	ErrInvalidFile = errors.New("invalid file")
+	ErrInvalidStep = errors.New("invalid step in file")
 )
 
 type StepError struct {

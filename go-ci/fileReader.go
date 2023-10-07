@@ -54,12 +54,12 @@ func validateSteps(yamlSteps *[]YamlStep) error {
 		go func(step YamlStep, idx int) {
 			defer wg.Done()
 			if !slices.Contains[[]string](stepTypes, step.Step) {
-				errCh <- fmt.Errorf("%w: Invalid step type at %d with step %s. Supported steps: %v", ErrInvalidFile, idx, step.Step, stepTypes)
+				errCh <- fmt.Errorf("%w: Invalid step type at %d with step %s. Supported steps: %v", ErrInvalidStep, idx, step.Step, stepTypes)
 				return
 			}
 			_, err := os.Stat(step.Project)
 			if errors.Is(err, os.ErrNotExist) {
-				errCh <- fmt.Errorf("%w: Project not exists", ErrInvalidFile)
+				errCh <- fmt.Errorf("%w: Project not exists", ErrInvalidStep)
 				return
 			}
 			if err != nil {
@@ -102,7 +102,6 @@ func parseFile(filePath string) ([]executer, error) {
 		}
 		executers = append(executers, executor)
 	}
-	fmt.Println("🚀 ~ file: fileReader.go:105 ~ funcparseFile ~ executers:", executers)
 
 	return executers, nil
 }

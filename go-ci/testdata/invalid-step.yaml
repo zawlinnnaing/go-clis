@@ -1,0 +1,6 @@
+- name: go build
+  project: "./testdata/non-existent-dir"
+  type: "incorrect-step"
+  exe: go
+  args: build .
+  message: go build success

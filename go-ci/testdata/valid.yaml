@@ -1,0 +1,24 @@
+- name: go build
+  project: "./testdata/tool"
+  type: "step"
+  exe: go
+  args: build .
+  message: go build success
+- name: go test
+  project: "./testdata/tool"
+  type: "step"
+  exe: go
+  args: "test -v ."
+  message: "go test success"
+- name: "go format"
+  project: "./testdata/tool"
+  type: "execution"
+  exe: "gofmt"
+  args: "-l"
+  message: "go format success"
+- name: git push
+  project: "./testdata/tool"
+  type: "timeout"
+  exe: git
+  args: push origin main
+  message: "git push success"
