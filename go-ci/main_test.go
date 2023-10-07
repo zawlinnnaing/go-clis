@@ -69,7 +69,8 @@ func TestRun(t *testing.T) {
 				command = testCase.mockCmd
 			}
 			out := bytes.Buffer{}
-			err := run(testCase.proj, &out)
+			pipeline := createDefaultPipeline(testCase.proj)
+			err := run(pipeline, &out)
 			if testCase.expErr != nil {
 				if err == nil {
 					t.Errorf("Expected error; received none")
@@ -146,7 +147,8 @@ func TestRunKill(t *testing.T) {
 			defer signal.Stop(expSig)
 
 			go func() {
-				errCh <- run(testCase.project, ioutil.Discard)
+				pipeline := createDefaultPipeline(testCase.project)
+				errCh <- run(pipeline, ioutil.Discard)
 			}()
 			go func() {
 				time.Sleep(2 * time.Second)

@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 type executer interface {
@@ -19,25 +18,30 @@ func main() {
 	file := flag.String("f", "", "Config file path")
 	flag.Parse()
 
-	_, err := parseFile(*file)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	if project == nil && file == nil {
+		fmt.Fprintln(os.Stderr, "Must provide either 'p' or 'f' flag")
 		os.Exit(1)
 	}
 
-	if err := run(*project, os.Stdout); err != nil {
+	var pipeline []executer
+	if file != nil {
+		steps, err := parseFile(*file)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		pipeline = steps
+	} else {
+		pipeline = createDefaultPipeline(*project)
+	}
+
+	if err := run(pipeline, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(project string, out io.Writer) error {
-	pipeline := []executer{
-		NewStep("go build", "go", "Go build: success", project, []string{"build", "."}),
-		NewStep("go test", "go", "Go test: success", project, []string{"test", "-v", "."}),
-		NewExecutionStep("go format", "gofmt", "Go format: success", project, []string{"-l"}),
-		NewTimeoutStep("git push", "git", "Git push: success", project, []string{"push", "origin", "master"}, 10*time.Second),
-	}
+func run(pipeline []executer, out io.Writer) error {
 	sigChan := make(chan os.Signal, 1)
 	errCh := make(chan error)
 	doneCh := make(chan struct{})
