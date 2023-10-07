@@ -10,4 +10,5 @@ use (
 	./markdown-preview
 	./to-do
 	./word-counter
+	./p-scan
 )
