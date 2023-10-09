@@ -4,8 +4,6 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -19,9 +17,6 @@ var hostsCmd = &cobra.Command{
 	- Delete hosts with delete command
 	- List hosts with list command
 	`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("hosts called")
-	},
 }
 
 func init() {
