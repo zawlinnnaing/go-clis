@@ -36,7 +36,9 @@ func deleteAction(writer io.Writer, hostsFile string, args []string) error {
 		if err := hostsList.Remove(host); err != nil {
 			return err
 		}
-		fmt.Fprintln(writer, "Removed host: ", host)
+		if _, err := fmt.Fprintln(writer, "Removed host:", host); err != nil {
+			return err
+		}
 	}
 	return hostsList.Save(hostsFile)
 }

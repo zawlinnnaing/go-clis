@@ -37,7 +37,9 @@ func addAction(writer io.Writer, hostsFile string, args []string) error {
 		if err := hostsList.Add(host); err != nil {
 			return err
 		}
-		fmt.Fprintln(writer, "Added host: ", host)
+		if _, err := fmt.Fprintln(writer, "Added host:", host); err != nil {
+			return err
+		}
 	}
 	return hostsList.Save(hostsFile)
 }
