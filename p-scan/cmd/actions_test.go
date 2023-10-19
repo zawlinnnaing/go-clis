@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -109,6 +111,11 @@ func TestIntegration(t *testing.T) {
 
 	expectedOut += strings.Join(hostsEnd, "\n")
 	expectedOut += fmt.Sprintln()
+	for _, host := range hostsEnd {
+		expectedOut += fmt.Sprintf("%s\n", host)
+		expectedOut += "Host not found"
+		expectedOut += fmt.Sprintln()
+	}
 
 	if err := addAction(&out, tempFile, hosts); err != nil {
 		t.Fatalf("Unexpected error: %s", err)
@@ -121,6 +128,54 @@ func TestIntegration(t *testing.T) {
 	}
 	if err := listAction(&out, tempFile, hostsEnd); err != nil {
 		t.Fatalf("Unexpected error: %s", err)
+	}
+
+	if err := scanAction(&out, tempFile, nil); err != nil {
+		t.Fatal(err)
+	}
+
+	if out.String() != expectedOut {
+		t.Errorf("Expected: %s, received: %s", expectedOut, out.String())
+	}
+}
+
+func TestScanAction(t *testing.T) {
+	hosts := []string{
+		"localhost",
+		"unknownHost",
+	}
+	tempFile, cleanup := setUp(t, hosts, true)
+	defer cleanup()
+	ports := []int{}
+	for i := 0; i < 2; i++ {
+		conn, err := net.Listen("tcp", net.JoinHostPort("localhost", "0"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer conn.Close()
+		_, portStr, err := net.SplitHostPort(conn.Addr().String())
+		if err != nil {
+			t.Fatal(err)
+		}
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			t.Fatal(err)
+		}
+		ports = append(ports, port)
+		if i == 1 {
+			conn.Close()
+		}
+	}
+	expectedOut := "localhost\n"
+	expectedOut += fmt.Sprintf("\t%d: open\n", ports[0])
+	expectedOut += fmt.Sprintf("\t%d: closed\n", ports[1])
+	expectedOut += fmt.Sprintln()
+	expectedOut += fmt.Sprintf("%s\n", hosts[1])
+	expectedOut += "Host not found"
+	expectedOut += fmt.Sprintln()
+	var out bytes.Buffer
+	if err := scanAction(&out, tempFile, ports); err != nil {
+		t.Fatal(err)
 	}
 	if out.String() != expectedOut {
 		t.Errorf("Expected: %s, received: %s", expectedOut, out.String())
