@@ -4,9 +4,16 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+var (
+	cfgFile string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -35,7 +42,34 @@ func Execute() {
 }
 
 func init() {
+	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default: $HOME/.p-scan.yaml)")
 	rootCmd.PersistentFlags().StringP("hosts-file", "f", "p-scan.hosts", "p-scan hosts")
+
+	// Viper config
+	replacer := strings.NewReplacer("-", "_")
+	viper.SetEnvKeyReplacer(replacer)
+	viper.SetEnvPrefix("PSCAN")
+
+	viper.BindPFlag("hosts-file", rootCmd.PersistentFlags().Lookup("hosts-file"))
+
 	versionTemplate := `{{printf "%s: %s - version %s\n" .Name .Short .Version}}`
 	rootCmd.SetVersionTemplate(versionTemplate)
+}
+
+func initConfig() {
+	if cfgFile != "" {
+		viper.SetConfigFile(cfgFile)
+	} else {
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
+		viper.AddConfigPath(home)
+		viper.SetConfigType(".yaml")
+		viper.SetConfigName(".p-scan")
+	}
+
+	viper.AutomaticEnv()
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
 }

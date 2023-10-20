@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/zawlinnnaing/go-clis/p-scan/scan"
 )
 
@@ -20,10 +21,7 @@ var addCmd = &cobra.Command{
 	Args:         cobra.MinimumNArgs(1),
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		hostFilePath, err := cmd.Flags().GetString("hosts-file")
-		if err != nil {
-			return err
-		}
+		hostFilePath := viper.GetString("hosts-file")
 		return addAction(os.Stdout, hostFilePath, args)
 	},
 }
