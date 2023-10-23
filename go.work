@@ -11,4 +11,5 @@ use (
 	./to-do
 	./word-counter
 	./p-scan
+	./todo-server
 )
