@@ -18,8 +18,12 @@ var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Run a scan on specified ports on the host",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		portsFlag, err := cmd.Flags().GetString("ports")
+		if err != nil {
+			return err
+		}
 		hostsFile := viper.GetString("hosts-file")
-		ports, err := cmd.Flags().GetIntSlice("ports")
+		ports, err := scan.ParsePorts(portsFlag)
 		if err != nil {
 			return err
 		}
@@ -29,7 +33,7 @@ var scanCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
-	scanCmd.Flags().IntSliceP("ports", "p", []int{22, 80, 443}, "Ports to scan")
+	scanCmd.Flags().StringP("ports", "p", "22,80,443", "Ports to scan. Must be a list of ports or ports range. (eg, 22,80,443 or 22-443)")
 
 	// Here you will define your flags and configuration settings.
 
