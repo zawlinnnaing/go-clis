@@ -8,6 +8,7 @@ import (
 
 var (
 	ErrInvalidPortsFormat = errors.New("invalid ports format")
+	ErrInvalidPortsRange  = errors.New("invalid ports range")
 )
 
 func parsePortsRange(portRangeStr string) (int, int, error) {
@@ -22,6 +23,9 @@ func parsePortsRange(portRangeStr string) (int, int, error) {
 	endPort, err := strconv.Atoi(portRanges[1])
 	if err != nil {
 		return 0, 0, err
+	}
+	if startPort < 1 || endPort > 65535 {
+		return 0, 0, ErrInvalidPortsRange
 	}
 	return startPort, endPort, nil
 }

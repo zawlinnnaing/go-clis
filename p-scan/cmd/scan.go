@@ -27,13 +27,18 @@ var scanCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return scanAction(os.Stdout, hostsFile, ports)
+		networkFlag, err := cmd.Flags().GetString("network")
+		if err != nil {
+			return err
+		}
+		return scanAction(os.Stdout, hostsFile, ports, networkFlag)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
 	scanCmd.Flags().StringP("ports", "p", "22,80,443", "Ports to scan. Must be a list of ports or ports range. (eg, 22,80,443 or 22-443)")
+	scanCmd.Flags().StringP("network", "n", "tcp", "Network type: tcp or udp. (default: tcp)")
 
 	// Here you will define your flags and configuration settings.
 
@@ -46,14 +51,14 @@ func init() {
 	// scanCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func scanAction(writer io.Writer, hostsFile string, ports []int) error {
+func scanAction(writer io.Writer, hostsFile string, ports []int, networkType string) error {
 	hostsList := scan.HostsList{}
 
 	if err := hostsList.Load(hostsFile); err != nil {
 		return err
 	}
 
-	results := scan.Run(&hostsList, ports)
+	results := scan.Run(&hostsList, ports, networkType)
 
 	return printResults(writer, results)
 }

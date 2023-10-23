@@ -130,7 +130,7 @@ func TestIntegration(t *testing.T) {
 		t.Fatalf("Unexpected error: %s", err)
 	}
 
-	if err := scanAction(&out, tempFile, nil); err != nil {
+	if err := scanAction(&out, tempFile, nil, "tcp"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -174,7 +174,7 @@ func TestScanAction(t *testing.T) {
 	expectedOut += "Host not found"
 	expectedOut += fmt.Sprintln()
 	var out bytes.Buffer
-	if err := scanAction(&out, tempFile, ports); err != nil {
+	if err := scanAction(&out, tempFile, ports, "tcp"); err != nil {
 		t.Fatal(err)
 	}
 	if out.String() != expectedOut {
