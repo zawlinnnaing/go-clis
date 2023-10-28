@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -236,4 +237,9 @@ func TestComplete(t *testing.T) {
 			t.Errorf("Expect task to be completed")
 		}
 	})
+}
+
+func TestMain(m *testing.M) {
+	log.SetOutput(io.Discard)
+	os.Exit(m.Run())
 }
