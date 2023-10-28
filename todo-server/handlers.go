@@ -92,7 +92,7 @@ func addHandler(w http.ResponseWriter, r *http.Request, list *todo.TaskList, tod
 		return
 	}
 
-	replyTextContent(w, r, http.StatusNoContent, "")
+	replyTextContent(w, r, http.StatusCreated, "")
 }
 
 func validateID(id string, list *todo.TaskList) (int, error) {
@@ -100,10 +100,10 @@ func validateID(id string, list *todo.TaskList) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("%w: InvalidData %s", ErrInvalidData, err.Error())
 	}
-	if idInt < 1 {
+	if idInt < 0 {
 		return 0, fmt.Errorf("%w: ID less than 1", ErrInvalidData)
 	}
-	if idInt > len(*list) {
+	if idInt >= len(*list) {
 		return 0, fmt.Errorf("%w: ID greater than list length(%d)", ErrNotFound, len(*list))
 	}
 	return idInt, nil
@@ -111,7 +111,7 @@ func validateID(id string, list *todo.TaskList) (int, error) {
 
 func getOneHandler(w http.ResponseWriter, r *http.Request, list *todo.TaskList, id int) {
 	resp := &TodoResponse{
-		Data: (*list)[id-1 : id],
+		Data: (*list)[id : id+1],
 	}
 	replyJSONContent(w, r, http.StatusOK, resp)
 }
