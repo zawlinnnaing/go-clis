@@ -61,7 +61,7 @@ func getItems(url string) ([]Item, error) {
 		return nil, fmt.Errorf("%w: %s", err, msg)
 	}
 	var resp Response
-	if err = json.NewDecoder(res.Body).Decode(&res); err != nil {
+	if err = json.NewDecoder(res.Body).Decode(&resp); err != nil {
 		return nil, fmt.Errorf("failed to decode: %v", err)
 	}
 	if resp.TotalResults == 0 {
