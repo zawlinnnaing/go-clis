@@ -17,6 +17,8 @@ var (
 	ErrNotNumber       = errors.New("not a number")
 )
 
+const timeFormat = "Jan/02 @15:04"
+
 type Item struct {
 	Task        string
 	Done        bool
@@ -68,4 +70,16 @@ func getItems(url string) ([]Item, error) {
 		return nil, fmt.Errorf("no results found. %w", ErrNotFound)
 	}
 	return resp.Data, nil
+}
+
+func getOne(url string, id int) (item Item, err error) {
+	fullURL := fmt.Sprintf("%s/todo/%d", url, id-1)
+	items, err := getItems(fullURL)
+	if err != nil {
+		return item, err
+	}
+	if len(items) != 1 {
+		return item, fmt.Errorf("invalid result: %w", ErrInvalidData)
+	}
+	return items[0], err
 }
