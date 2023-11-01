@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -82,4 +83,45 @@ func getOne(url string, id int) (item Item, err error) {
 		return item, fmt.Errorf("invalid result: %w", ErrInvalidData)
 	}
 	return items[0], err
+}
+
+func sendRequest(method string, url string, contentType string, body io.Reader, expStatus int) error {
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return err
+	}
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
+	}
+	res, err := newClient().Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	if res.StatusCode != expStatus {
+		msg, err := io.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("unable to read response: %v", err)
+		}
+		err = ErrInvalidResponse
+		if res.StatusCode == http.StatusNotFound {
+			err = ErrNotFound
+		}
+		return fmt.Errorf("%w: %s", err, msg)
+	}
+	return nil
+}
+
+func addItem(apiRoot string, task string) error {
+	url := fmt.Sprintf("%s/todo", apiRoot)
+	item := struct {
+		Task string `json:"task"`
+	}{
+		Task: task,
+	}
+	var body bytes.Buffer
+	if err := json.NewEncoder(&body).Encode(item); err != nil {
+		return err
+	}
+	return sendRequest(http.MethodPost, url, "application/json", &body, http.StatusCreated)
 }

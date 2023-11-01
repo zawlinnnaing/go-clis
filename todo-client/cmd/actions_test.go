@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -130,5 +131,46 @@ func TestViewAction(t *testing.T) {
 				t.Errorf("Expected out: %s, received: %s", testCase.expOut, out.String())
 			}
 		})
+	}
+}
+
+func TestAddAction(t *testing.T) {
+	expURLPath := "/todo"
+	expMethod := http.MethodPost
+	expBody := "{\"task\":\"Task 1\"}"
+	expOut := fmt.Sprintf("Added task %q to the list.\n", "Task 1")
+	expContent := "application/json"
+	args := []string{"Task", "1"}
+
+	url, cleanup := mockServer(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != expURLPath {
+			t.Errorf("Expected url path: %s, received: %s", expURLPath, r.URL.Path)
+		}
+		if r.Method != expMethod {
+			t.Errorf("Expected method: %s, received: %s", expMethod, r.Method)
+		}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatalf("Unexpected err: %s", err)
+		}
+		if transformString(string(body)) != transformString(expBody) {
+			t.Errorf("Expected body: %s, received: %s", expBody, string(body))
+		}
+		r.Body.Close()
+		contentType := r.Header.Get("Content-Type")
+		if contentType != expContent {
+			t.Errorf("Expected content type: %s, received: %s", expContent, contentType)
+		}
+		w.WriteHeader(testResp["created"].Status)
+		fmt.Fprintln(w, testResp["created"].Body)
+	})
+	defer cleanup()
+	var out bytes.Buffer
+	err := addAction(url, args, &out)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+	if out.String() != expOut {
+		t.Errorf("Expected output: %s, received: %s", expOut, out.String())
 	}
 }
