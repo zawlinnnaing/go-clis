@@ -30,7 +30,7 @@ var viewCmd = &cobra.Command{
 func viewAction(apiRoot string, idArg string, writer io.Writer) error {
 	id, err := strconv.Atoi(idArg)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %v", ErrNotNumber, err)
 	}
 	item, err := getOne(apiRoot, id)
 	if err != nil {

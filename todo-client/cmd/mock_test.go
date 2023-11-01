@@ -29,29 +29,31 @@ var testResp = map[string]struct {
 			],
 			"date": 12425245,
 			"total_results": 2
-		  }`,
+		}`,
 	},
 	"resultOne": {
 		Status: http.StatusOK,
-		Body: `{
-			"data": [
+		Body: `
+		{
+			"data":[
 				{
-					"Task": "Task 1",
-					"Done": false,
-					"CreatedAt": "2019-10-28T08:23:38.310097076-04:00",
-					"CompletedAt": "0001-01-01T00:00:00Z"
-				},
+					"Task":"Task 1",
+					"Done":false,
+					"CreatedAt":"2019-10-28T08:23:38.310097076-04:00",
+					"CompletedAt":"0001-01-01T00:00:00Z"
+				}
 			],
-			"date": 1234566567,
-			"total_results": 1
+			"date":1234566567,
+			"total_results":1
 		}`,
 	},
 	"noResult": {
 		Status: http.StatusOK,
-		Body: `{
-			"data": [],
-			"date": 12345667,
-			"total_results": 0
+		Body: `
+		{
+			"data":[],
+			"date":12345667,
+			"total_results":0
 		}`,
 	},
 	"root": {
