@@ -59,7 +59,8 @@ func todoRouter(todoFile string, locker sync.Locker) http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			getOneHandler(w, r, list, id)
-		case http.MethodPatch:
+		// This should be `PATCH` method, somehow server doesn't close connection on PATCH
+		case http.MethodPut:
 			patchOneHandler(w, r, list, id, todoFile)
 		case http.MethodDelete:
 			deleteOneHandler(w, r, list, id, todoFile)

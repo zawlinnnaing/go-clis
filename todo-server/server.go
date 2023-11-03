@@ -17,7 +17,9 @@ func newMux(file string) http.Handler {
 }
 
 func replyTextContent(writer http.ResponseWriter, request *http.Request, status int, content string) {
-	writer.Header().Set("Content-Type", "text/plain")
+	if status != http.StatusNoContent {
+		writer.Header().Set("Content-Type", "text/plain")
+	}
 	writer.WriteHeader(status)
 	writer.Write([]byte(content))
 }
