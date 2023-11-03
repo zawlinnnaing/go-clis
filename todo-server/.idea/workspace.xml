@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5dd2a176-376a-4b54-8dfc-e5a80f5ef760" name="Changes" comment="chore(todo-client): added intellij">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server.go" afterDir="false" />
-    </list>
+    <list default="true" id="5dd2a176-376a-4b54-8dfc-e5a80f5ef760" name="Changes" comment="fix(todo-server): use PUT for update instead of PATCH" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -84,7 +80,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="chore(todo-client): added intellij" />
     <MESSAGE value="chore(todo-server): added intellij" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore(todo-server): added intellij" />
+    <MESSAGE value="fix(todo-server): use PUT for update instead of PATCH" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix(todo-server): use PUT for update instead of PATCH" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
