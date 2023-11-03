@@ -128,8 +128,7 @@ func addItem(apiRoot string, task string) error {
 
 func completeItem(apiRoot string, id int) error {
 	url := fmt.Sprintf("%s/todo/%d?complete", apiRoot, id-1)
-
-	return sendRequest(http.MethodPatch, url, "", nil, http.StatusNoContent)
+	return sendRequest(http.MethodPut, url, "", nil, http.StatusNoContent)
 }
 
 func deleteItem(apiRoot string, id int) error {
