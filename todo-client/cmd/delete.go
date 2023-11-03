@@ -20,21 +20,21 @@ var deleteCmd = &cobra.Command{
 	Args:         cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		apiRoot := viper.GetString("api-root")
-		err := deleteAction(apiRoot, args[0])
+		id, err := deleteAction(apiRoot, args[0])
 		if err != nil {
 			return err
 		}
-		_, err = fmt.Fprintf(os.Stdout, "Item number %s has been deleted.", args[0])
+		_, err = fmt.Fprintf(os.Stdout, "Item number %d has been deleted.", id)
 		return err
 	},
 }
 
-func deleteAction(apiRoot string, idArg string) error {
+func deleteAction(apiRoot string, idArg string) (int, error) {
 	id, err := strconv.Atoi(idArg)
 	if err != nil {
-		return fmt.Errorf("%w: %v", ErrNotNumber, err)
+		return 0, fmt.Errorf("%w: %v", ErrNotNumber, err)
 	}
-	return deleteItem(apiRoot, id)
+	return id, deleteItem(apiRoot, id)
 }
 
 func init() {

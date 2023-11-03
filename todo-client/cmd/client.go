@@ -107,7 +107,7 @@ func sendRequest(method string, url string, contentType string, body io.Reader, 
 		if res.StatusCode == http.StatusNotFound {
 			err = ErrNotFound
 		}
-		return fmt.Errorf("%w: %s", err, msg)
+		return fmt.Errorf("%w: %s, statusCode: %d", err, msg, res.StatusCode)
 	}
 	return nil
 }
