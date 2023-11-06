@@ -50,7 +50,7 @@ func (repo *InMemoryRepo) Last() (pomodoro.Interval, error) {
 	return repo.intervals[len(repo.intervals)-1], nil
 }
 
-func (repo *InMemoryRepo) Break(n int) ([]pomodoro.Interval, error) {
+func (repo *InMemoryRepo) Breaks(n int) ([]pomodoro.Interval, error) {
 	repo.RLock()
 	defer repo.RUnlock()
 	data := []pomodoro.Interval{}

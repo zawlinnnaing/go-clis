@@ -21,6 +21,12 @@ const (
 	StateCancelled
 )
 
+const (
+	DefaultPomodoroDuration  = 25 * time.Minute
+	DefaultShorBreakDuration = 5 * time.Minute
+	DefaultLongBreakDuration = 15 * time.Minute
+)
+
 var (
 	ErrNoIntervals        = errors.New("no intervals")
 	ErrIntervalNotRunning = errors.New("interval not running")
@@ -58,9 +64,9 @@ type Callback func(interval Interval)
 func NewIntervalConfig(repo Repository, pomodoro time.Duration, shortBreak time.Duration, longBreak time.Duration) *IntervalConfig {
 	intervalConfig := &IntervalConfig{
 		repo:               repo,
-		PomodoroDuration:   25 * time.Minute,
-		ShortBreakDuration: 5 * time.Minute,
-		LongBreakDuration:  15 * time.Minute,
+		PomodoroDuration:   DefaultPomodoroDuration,
+		ShortBreakDuration: DefaultShorBreakDuration,
+		LongBreakDuration:  DefaultLongBreakDuration,
 	}
 	if pomodoro > 0 {
 		intervalConfig.PomodoroDuration = pomodoro
