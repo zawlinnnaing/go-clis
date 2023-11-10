@@ -83,7 +83,7 @@ func NewIntervalConfig(repo Repository, pomodoro time.Duration, shortBreak time.
 func nextCategory(repo Repository) (string, error) {
 	lastInterval, err := repo.Last()
 	if err != nil && errors.Is(err, ErrNoIntervals) {
-		return CategoryPomodoro, err
+		return CategoryPomodoro, nil
 	}
 	if err != nil {
 		return "", err

@@ -53,7 +53,7 @@ func (repo *InMemoryRepo) Last() (pomodoro.Interval, error) {
 func (repo *InMemoryRepo) Breaks(n int) ([]pomodoro.Interval, error) {
 	repo.RLock()
 	defer repo.RUnlock()
-	data := []pomodoro.Interval{}
+	var data []pomodoro.Interval
 	for k := len(repo.intervals) - 1; k >= 0; k-- {
 		interval := &repo.intervals[k]
 		if interval.Category == pomodoro.CategoryPomodoro {
