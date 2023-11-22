@@ -6,7 +6,9 @@ package repository
 import (
 	"fmt"
 	"github.com/zawlinnnaing/go-clis/pomodoro-cli/pomodoro"
+	"strings"
 	"sync"
+	"time"
 )
 
 type InMemoryRepo struct {
@@ -68,6 +70,21 @@ func (repo *InMemoryRepo) Breaks(n int) ([]pomodoro.Interval, error) {
 		}
 	}
 	return data, nil
+}
+
+func (repo *InMemoryRepo) CategorySummary(day time.Time, filter string) (time.Duration, error) {
+	repo.RLock()
+	defer repo.RUnlock()
+	filter = strings.Trim(filter, "%")
+	var totalDuration time.Duration
+	for _, interval := range repo.intervals {
+		if interval.StartTime.Year() == day.Year() && interval.StartTime.YearDay() == day.YearDay() {
+			if strings.Contains(interval.Category, filter) {
+				totalDuration += interval.ActualDuration
+			}
+		}
+	}
+	return totalDuration, nil
 }
 
 func NewInMemoryRepo() *InMemoryRepo {

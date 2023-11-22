@@ -108,6 +108,22 @@ func (repo *dbRepo) Breaks(n int) ([]pomodoro.Interval, error) {
 	return data, nil
 }
 
+func (repo *dbRepo) CategorySummary(day time.Time, filter string) (time.Duration, error) {
+	repo.RLock()
+	defer repo.RUnlock()
+	dbStatement := `SELECT sum(actual_duration) from interval WHERE category like ? AND strftime('%Y-%m-%d',start_time, 'localtime')=strftime('%Y-%m-%d', ? , 'localtime');`
+	var dbResult sql.NullInt64
+	var totalDuration time.Duration
+	err := repo.db.QueryRow(dbStatement, filter, day).Scan(&dbResult)
+	if err != nil {
+		return totalDuration, err
+	}
+	if dbResult.Valid {
+		totalDuration = time.Duration(dbResult.Int64)
+	}
+	return totalDuration, nil
+}
+
 func NewSQLite3Repo(dbFile string) (*dbRepo, error) {
 	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
