@@ -1,3 +1,6 @@
+//go:build inmemory
+// +build inmemory
+
 package pomodoro_test
 
 import (
@@ -9,6 +12,5 @@ import (
 func getRepo(t *testing.T) (pomodoro.Repository, func()) {
 	t.Helper()
 	return repository.NewInMemoryRepo(), func() {
-
 	}
 }

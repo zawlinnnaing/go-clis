@@ -67,21 +67,21 @@ func (repo *dbRepo) ByID(id int64) (pomodoro.Interval, error) {
 	repo.RLock()
 	defer repo.RUnlock()
 	row := repo.db.QueryRow("SELECT * from interval WHERE id=?", id)
-	interval := &pomodoro.Interval{}
-	err := row.Scan(interval.ID, interval.StartTime, interval.PlannedDuration, interval.ActualDuration, interval.Category, interval.State)
-	return *interval, err
+	interval := pomodoro.Interval{}
+	err := row.Scan(&interval.ID, &interval.StartTime, &interval.PlannedDuration, &interval.ActualDuration, &interval.Category, &interval.State)
+	return interval, err
 }
 
 func (repo *dbRepo) Last() (pomodoro.Interval, error) {
 	repo.RLock()
 	defer repo.RUnlock()
-	interval := &pomodoro.Interval{}
+	interval := pomodoro.Interval{}
 	err := repo.db.QueryRow("SELECT * from interval ORDER BY id desc LIMIT 1").Scan(
-		interval.ID, interval.StartTime, interval.PlannedDuration, interval.ActualDuration, interval.Category, interval.State)
+		&interval.ID, &interval.StartTime, &interval.PlannedDuration, &interval.ActualDuration, &interval.Category, &interval.State)
 	if errors.Is(err, sql.ErrNoRows) {
-		return *interval, pomodoro.ErrNoIntervals
+		return interval, pomodoro.ErrNoIntervals
 	}
-	return *interval, err
+	return interval, err
 }
 
 func (repo *dbRepo) Breaks(n int) ([]pomodoro.Interval, error) {
@@ -95,12 +95,12 @@ func (repo *dbRepo) Breaks(n int) ([]pomodoro.Interval, error) {
 	defer rows.Close()
 	var data []pomodoro.Interval
 	for rows.Next() {
-		interval := &pomodoro.Interval{}
-		err := rows.Scan(interval.ID, interval.StartTime, interval.PlannedDuration, interval.ActualDuration, interval.Category, interval.State)
+		interval := pomodoro.Interval{}
+		err := rows.Scan(&interval.ID, &interval.StartTime, &interval.PlannedDuration, &interval.ActualDuration, &interval.Category, &interval.State)
 		if err != nil {
 			return nil, err
 		}
-		data = append(data, *interval)
+		data = append(data, interval)
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err
