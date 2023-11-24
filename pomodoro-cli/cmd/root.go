@@ -54,7 +54,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pomodoro-cli.yaml)")
-	rootCmd.PersistentFlags().StringP("db", "d", "pomodoro.db", "Database file")
+	rootCmd.Flags().StringP("db", "d", "./pomodoro.db", "Database file")
 
 	rootCmd.Flags().DurationP("pomo", "p", 25*time.Minute, "Pomodoro duration")
 	rootCmd.Flags().DurationP("short", "s", 5*time.Minute, "Short break duration")

@@ -125,6 +125,9 @@ func (repo *dbRepo) CategorySummary(day time.Time, filter string) (time.Duration
 }
 
 func NewSQLite3Repo(dbFile string) (*dbRepo, error) {
+	if dbFile == "" {
+		return nil, errors.New("DB file not provided")
+	}
 	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
 		return nil, err
