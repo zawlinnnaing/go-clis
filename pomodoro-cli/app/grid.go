@@ -8,7 +8,7 @@ import (
 	"github.com/mum4k/termdash/terminal/terminalapi"
 )
 
-func newGrid(btnSet *buttonSet, w *widgets, api terminalapi.Terminal) (*container.Container, error) {
+func newGrid(btnSet *buttonSet, w *widgets, summary *summary, api terminalapi.Terminal) (*container.Container, error) {
 	builder := grid.New()
 	builder.Add(
 		grid.RowHeightPerc(30,
@@ -36,7 +36,22 @@ func newGrid(btnSet *buttonSet, w *widgets, api terminalapi.Terminal) (*containe
 			grid.ColWidthPerc(50, grid.Widget(btnSet.btnPause)),
 		))
 	builder.Add(
-		grid.RowHeightPerc(60))
+		grid.RowHeightPerc(60,
+			grid.ColWidthPerc(30,
+				grid.Widget(
+					summary.bcDaily,
+					container.Border(linestyle.Light),
+					container.BorderTitle("Daily Summary (Minutes)"),
+				),
+			),
+			grid.ColWidthPerc(70,
+				grid.Widget(
+					summary.lcWeekly,
+					container.Border(linestyle.Light),
+					container.BorderTitle("Weekly Summary"),
+				),
+			),
+		))
 
 	gridOpts, err := builder.Build()
 	if err != nil {

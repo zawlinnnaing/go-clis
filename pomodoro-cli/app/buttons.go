@@ -14,8 +14,7 @@ type buttonSet struct {
 	btnPause *button.Button
 }
 
-func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets *widgets, redrawCh chan<- bool, errorCh chan<- error) (*buttonSet, error) {
-
+func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets *widgets, summary *summary, redrawCh chan<- bool, errorCh chan<- error) (*buttonSet, error) {
 	start := func(interval pomodoro.Interval) {
 		var message string
 		switch interval.Category {
@@ -31,6 +30,7 @@ func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets 
 
 	end := func(interval pomodoro.Interval) {
 		widgets.update([]int{}, "", "Nothing running...", "", redrawCh)
+		summary.update(redrawCh)
 	}
 
 	periodic := func(interval pomodoro.Interval) {

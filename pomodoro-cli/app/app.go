@@ -33,7 +33,13 @@ func New(config *pomodoro.IntervalConfig) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	btnSet, err := newButtonSet(ctx, config, w, redrawCh, errorCh)
+
+	summaryWidget, err := newSummary(ctx, config, redrawCh, errorCh)
+	if err != nil {
+		return nil, err
+	}
+
+	btnSet, err := newButtonSet(ctx, config, w, summaryWidget, redrawCh, errorCh)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +48,7 @@ func New(config *pomodoro.IntervalConfig) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	container, err := newGrid(btnSet, w, terminal)
+	container, err := newGrid(btnSet, w, summaryWidget, terminal)
 	if err != nil {
 		return nil, err
 	}
