@@ -46,7 +46,7 @@ func TestNewIntervalConfig(t *testing.T) {
 	defer cleanUp()
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			config := pomodoro.NewIntervalConfig(repo, testCase.input[0], testCase.input[1], testCase.input[2])
+			config := pomodoro.NewIntervalConfig(repo, testCase.input[0], testCase.input[1], testCase.input[2], 0)
 			if config.PomodoroDuration != testCase.expect.PomodoroDuration {
 				t.Errorf("Expected pomo duration: %d, recevied: %d", testCase.expect.PomodoroDuration, config.PomodoroDuration)
 			}
@@ -66,7 +66,7 @@ func TestGetInterval(t *testing.T) {
 	const shortBreakDuration = time.Millisecond
 	const pomodoroDuration = 3 * time.Millisecond
 	const longBreakDuration = 2 * time.Millisecond
-	config := pomodoro.NewIntervalConfig(repo, pomodoroDuration, shortBreakDuration, longBreakDuration)
+	config := pomodoro.NewIntervalConfig(repo, pomodoroDuration, shortBreakDuration, longBreakDuration, 0)
 	for i := 1; i <= 16; i++ {
 		var (
 			expCategory string
@@ -119,7 +119,7 @@ func TestPause(t *testing.T) {
 	repo, cleanup := getRepo(t)
 	defer cleanup()
 
-	config := pomodoro.NewIntervalConfig(repo, duration, duration, duration)
+	config := pomodoro.NewIntervalConfig(repo, duration, duration, duration, 0)
 	testCases := []struct {
 		name        string
 		start       bool
@@ -190,7 +190,7 @@ func TestStart(t *testing.T) {
 	const duration = 2 * time.Second
 	repo, cleanup := getRepo(t)
 	defer cleanup()
-	config := pomodoro.NewIntervalConfig(repo, duration, duration, duration)
+	config := pomodoro.NewIntervalConfig(repo, duration, duration, duration, 0)
 	testCases := []struct {
 		name        string
 		cancel      bool

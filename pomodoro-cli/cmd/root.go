@@ -32,6 +32,7 @@ var rootCmd = &cobra.Command{
 			viper.GetDuration("pomo"),
 			viper.GetDuration("short"),
 			viper.GetDuration("long"),
+			viper.GetDuration("total"),
 		)
 		return rootAction(os.Stdout, config)
 	},
@@ -56,6 +57,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pomodoro-cli.yaml)")
 	rootCmd.Flags().StringP("db", "d", "./pomodoro.db", "Database file")
 
+	rootCmd.Flags().DurationP("total", "t", 0, "Total duration to run pomodoro")
 	rootCmd.Flags().DurationP("pomo", "p", 25*time.Minute, "Pomodoro duration")
 	rootCmd.Flags().DurationP("short", "s", 5*time.Minute, "Short break duration")
 	rootCmd.Flags().DurationP("long", "l", 15*time.Minute, "Long break duration")
@@ -64,6 +66,7 @@ func init() {
 	viper.BindPFlag("pomo", rootCmd.Flags().Lookup("pomo"))
 	viper.BindPFlag("short", rootCmd.Flags().Lookup("short"))
 	viper.BindPFlag("long", rootCmd.Flags().Lookup("long"))
+	viper.BindPFlag("total", rootCmd.Flags().Lookup("total"))
 }
 
 // initConfig reads in config file and ENV variables if set.

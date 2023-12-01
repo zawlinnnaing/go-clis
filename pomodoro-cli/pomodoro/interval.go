@@ -49,16 +49,18 @@ type IntervalConfig struct {
 	PomodoroDuration   time.Duration
 	ShortBreakDuration time.Duration
 	LongBreakDuration  time.Duration
+	RunUntil           time.Time
 }
 
 type Callback func(interval Interval)
 
-func NewIntervalConfig(repo Repository, pomodoro time.Duration, shortBreak time.Duration, longBreak time.Duration) *IntervalConfig {
+func NewIntervalConfig(repo Repository, pomodoro time.Duration, shortBreak time.Duration, longBreak time.Duration, total time.Duration) *IntervalConfig {
 	intervalConfig := &IntervalConfig{
 		repo:               repo,
 		PomodoroDuration:   DefaultPomodoroDuration,
 		ShortBreakDuration: DefaultShorBreakDuration,
 		LongBreakDuration:  DefaultLongBreakDuration,
+		RunUntil:           time.Time{},
 	}
 	if pomodoro > 0 {
 		intervalConfig.PomodoroDuration = pomodoro
@@ -68,6 +70,9 @@ func NewIntervalConfig(repo Repository, pomodoro time.Duration, shortBreak time.
 	}
 	if longBreak > 0 {
 		intervalConfig.LongBreakDuration = longBreak
+	}
+	if total > 0 {
+		intervalConfig.RunUntil = time.Now().Add(total)
 	}
 	return intervalConfig
 }
@@ -131,8 +136,10 @@ func tick(ctx context.Context, id int64, config *IntervalConfig, start, periodic
 				return err
 			}
 			interval.State = StateDone
+			if err = config.repo.Update(interval); err != nil {
+				return err
+			}
 			end(interval)
-			return config.repo.Update(interval)
 		case <-ctx.Done():
 			interval, err = config.repo.ByID(id)
 			if err != nil {

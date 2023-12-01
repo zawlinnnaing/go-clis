@@ -7,6 +7,7 @@ import (
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/button"
 	"github.com/zawlinnnaing/go-clis/pomodoro-cli/pomodoro"
+	"time"
 )
 
 type buttonSet struct {
@@ -28,11 +29,6 @@ func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets 
 		widgets.update([]int{}, interval.Category, message, "", redrawCh)
 	}
 
-	end := func(interval pomodoro.Interval) {
-		widgets.update([]int{}, "", "Nothing running...", "", redrawCh)
-		summary.update(redrawCh)
-	}
-
 	periodic := func(interval pomodoro.Interval) {
 		widgets.update(
 			[]int{int(interval.ActualDuration), int(interval.PlannedDuration)},
@@ -40,6 +36,21 @@ func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets 
 			fmt.Sprint(interval.PlannedDuration-interval.ActualDuration),
 			redrawCh,
 		)
+	}
+
+	var end func(interval pomodoro.Interval)
+
+	end = func(interval pomodoro.Interval) {
+		isBefore := time.Now().Before(config.RunUntil)
+		widgets.update([]int{}, "", fmt.Sprintf("Run until: %v, time now: %v, before: %v", config.RunUntil, time.Now(), isBefore), "", redrawCh)
+		if isBefore {
+			nextInterval, err := pomodoro.GetInterval(config)
+			errorCh <- err
+			errorCh <- nextInterval.Start(ctx, config, start, periodic, end)
+		} else {
+			widgets.update([]int{}, "", "Nothing running...", "", redrawCh)
+		}
+		summary.update(redrawCh)
 	}
 
 	startInterval := func() {
