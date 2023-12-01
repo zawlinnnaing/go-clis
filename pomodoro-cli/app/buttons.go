@@ -42,11 +42,12 @@ func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets 
 
 	end = func(interval pomodoro.Interval) {
 		isBefore := time.Now().Before(config.RunUntil)
-		widgets.update([]int{}, "", fmt.Sprintf("Run until: %v, time now: %v, before: %v", config.RunUntil, time.Now(), isBefore), "", redrawCh)
 		if isBefore {
-			nextInterval, err := pomodoro.GetInterval(config)
-			errorCh <- err
-			errorCh <- nextInterval.Start(ctx, config, start, periodic, end)
+			go func() {
+				nextInterval, err := pomodoro.GetInterval(config)
+				errorCh <- err
+				errorCh <- nextInterval.Start(ctx, config, start, periodic, end)
+			}()
 		} else {
 			widgets.update([]int{}, "", "Nothing running...", "", redrawCh)
 		}

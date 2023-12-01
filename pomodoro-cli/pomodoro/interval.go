@@ -139,6 +139,7 @@ func tick(ctx context.Context, id int64, config *IntervalConfig, start, periodic
 			if err = config.repo.Update(interval); err != nil {
 				return err
 			}
+			ticker.Stop()
 			end(interval)
 		case <-ctx.Done():
 			interval, err = config.repo.ByID(id)
