@@ -6,6 +6,11 @@ require (
 	github.com/mum4k/termdash v0.13.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
+	github.com/zawlinnnaing/go-clis/notify v0.0.0
+)
+
+replace (
+	github.com/zawlinnnaing/go-clis/notify => ../notify
 )
 
 require (

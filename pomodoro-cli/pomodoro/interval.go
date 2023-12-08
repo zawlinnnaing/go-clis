@@ -45,22 +45,24 @@ type Interval struct {
 }
 
 type IntervalConfig struct {
-	repo               Repository
-	PomodoroDuration   time.Duration
-	ShortBreakDuration time.Duration
-	LongBreakDuration  time.Duration
-	RunUntil           time.Time
+	repo                Repository
+	PomodoroDuration    time.Duration
+	ShortBreakDuration  time.Duration
+	LongBreakDuration   time.Duration
+	RunUntil            time.Time
+	DisableNotification bool
 }
 
 type Callback func(interval Interval)
 
-func NewIntervalConfig(repo Repository, pomodoro time.Duration, shortBreak time.Duration, longBreak time.Duration, total time.Duration) *IntervalConfig {
+func NewIntervalConfig(repo Repository, pomodoro time.Duration, shortBreak time.Duration, longBreak time.Duration, total time.Duration, disableNoti bool) *IntervalConfig {
 	intervalConfig := &IntervalConfig{
-		repo:               repo,
-		PomodoroDuration:   DefaultPomodoroDuration,
-		ShortBreakDuration: DefaultShorBreakDuration,
-		LongBreakDuration:  DefaultLongBreakDuration,
-		RunUntil:           time.Time{},
+		repo:                repo,
+		PomodoroDuration:    DefaultPomodoroDuration,
+		ShortBreakDuration:  DefaultShorBreakDuration,
+		LongBreakDuration:   DefaultLongBreakDuration,
+		RunUntil:            time.Time{},
+		DisableNotification: disableNoti,
 	}
 	if pomodoro > 0 {
 		intervalConfig.PomodoroDuration = pomodoro

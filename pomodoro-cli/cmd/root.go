@@ -33,6 +33,7 @@ var rootCmd = &cobra.Command{
 			viper.GetDuration("short"),
 			viper.GetDuration("long"),
 			viper.GetDuration("until"),
+			viper.GetBool("disable-notification"),
 		)
 		return rootAction(os.Stdout, config)
 	},
@@ -62,11 +63,14 @@ func init() {
 	rootCmd.Flags().DurationP("short", "s", 5*time.Minute, "Short break duration")
 	rootCmd.Flags().DurationP("long", "l", 15*time.Minute, "Long break duration")
 
+	rootCmd.Flags().BoolP("disable-notification", "n", false, "Disable Notification")
+
 	viper.BindPFlag("db", rootCmd.Flags().Lookup("db"))
 	viper.BindPFlag("pomo", rootCmd.Flags().Lookup("pomo"))
 	viper.BindPFlag("short", rootCmd.Flags().Lookup("short"))
 	viper.BindPFlag("long", rootCmd.Flags().Lookup("long"))
 	viper.BindPFlag("until", rootCmd.Flags().Lookup("until"))
+	viper.BindPFlag("disable-notification", rootCmd.Flags().Lookup("disable-notification"))
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -27,6 +27,9 @@ func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets 
 			message = "Take a long break"
 		}
 		widgets.update([]int{}, interval.Category, message, "", redrawCh)
+		if !config.DisableNotification {
+			sendNotification(message)
+		}
 	}
 
 	periodic := func(interval pomodoro.Interval) {
@@ -52,6 +55,10 @@ func newButtonSet(ctx context.Context, config *pomodoro.IntervalConfig, widgets 
 			widgets.update([]int{}, "", "Nothing running...", "", redrawCh)
 		}
 		summary.update(redrawCh)
+		message := fmt.Sprintf("%s finished!", interval.Category)
+		if !config.DisableNotification {
+			sendNotification(message)
+		}
 	}
 
 	startInterval := func() {

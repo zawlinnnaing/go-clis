@@ -63,7 +63,7 @@ func TestDailySummary(t *testing.T) {
 		40 * time.Minute,
 		5 * time.Minute,
 	}
-	intervalConfig := pomodoro.NewIntervalConfig(repo, 20*time.Minute, 5*time.Minute, 15*time.Minute, 0)
+	intervalConfig := pomodoro.NewIntervalConfig(repo, 20*time.Minute, 5*time.Minute, 15*time.Minute, 0, false)
 	actualSummary, err := pomodoro.DailySummary(time.Now(), intervalConfig)
 	if err != nil {
 		t.Fatal(err)
@@ -76,7 +76,7 @@ func TestDailySummary(t *testing.T) {
 func TestWeeklySummary(t *testing.T) {
 	repo, cleanup := initData(t)
 	defer cleanup()
-	intervalConfig := pomodoro.NewIntervalConfig(repo, 20*time.Minute, 5*time.Minute, 15*time.Minute, 0)
+	intervalConfig := pomodoro.NewIntervalConfig(repo, 20*time.Minute, 5*time.Minute, 15*time.Minute, 0, false)
 	weeklySummaries, err := pomodoro.RangeSummary(time.Now(), 3, intervalConfig)
 	if err != nil {
 		t.Fatal(err)
