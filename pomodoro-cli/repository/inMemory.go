@@ -1,5 +1,5 @@
-//go:build inmemory
-// +build inmemory
+//go:build inmemory || containers
+// +build inmemory containers
 
 package repository
 

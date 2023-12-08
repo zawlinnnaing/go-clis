@@ -1,5 +1,4 @@
-//go:build !inmemory
-// +build !inmemory
+//go:build !inmemory && !containers
 
 package cmd
 

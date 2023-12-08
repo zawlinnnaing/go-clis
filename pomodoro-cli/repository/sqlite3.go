@@ -1,4 +1,4 @@
-//go:build !inmemory
+//go:build !inmemory && !containers
 
 package repository
 
