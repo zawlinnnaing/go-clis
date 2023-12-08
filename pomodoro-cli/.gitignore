@@ -1,3 +1,5 @@
 **/*.db
 
 ./pomodoro-cli
+
+releases/
