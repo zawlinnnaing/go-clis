@@ -3,14 +3,11 @@ module github.com/zawlinnnaing/go-clis/pomodoro-cli
 go 1.20
 
 require (
+	github.com/mattn/go-sqlite3 v1.14.18
 	github.com/mum4k/termdash v0.13.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
-	github.com/zawlinnnaing/go-clis/notify v0.0.0
-)
-
-replace (
-	github.com/zawlinnnaing/go-clis/notify => ../notify
+	github.com/zawlinnnaing/go-clis/notify v0.0.0-20231208164247-db0b0eba1a98
 )
 
 require (
@@ -22,7 +19,6 @@ require (
 	github.com/lucasb-eyer/go-colorful v1.0.3 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
-	github.com/mattn/go-sqlite3 v1.14.18 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
